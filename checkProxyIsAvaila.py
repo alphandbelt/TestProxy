@@ -1,18 +1,6 @@
 # -*- encoding:utf-8 -*-
 
 
-#  author: panshi
-#    time: 2020/09/04
-# subject: 本地测试socks5代理
-
-
-
-# /usr/bin/udp2raw_amd64 -s -l0.0.0.0:4000 -r127.0.0.1:4001 -k topsecret2020 --raw-mode faketcp --cipher-mode xor
-# /bin/kcptun -t 127.0.0.1:1256 -l 0.0.0.0:4001 -mode fast3 -nocomp -sockbuf 16777217 -dscp 46 -key topsecret2020 -crypt aes-192
-
-
-
-
 import subprocess
 import json
 import requests
@@ -23,29 +11,6 @@ SS_CONFIG_PATH = "/etc/shadowsocks/config.json"
 SAVE_SUCCEED_PATH = "succeed.txt"
 PROXY_INFO = "real.txt"
 FLAG_SUCCEED = "FILE"
-
-
-
-'''
-    OWASP
-    1. Injection
-    2. Broken Authentication
-    3. Sensitive Data Explosure
-    4. XML Enternal Entities
-    5. Broken Access Control
-    6. Security Misconfiguration
-    7. Cross-Site Scripting XSS
-    8. Insecure Deserialization
-    9. Using Components With Known Vulnerabilities
-    10. Insufficient Logging & Monitoring 
-
-
-'''
-
-
-
-
-
 
 
 def performCommand(server, port, user, password, encrypt_method):
@@ -96,9 +61,9 @@ def performCommand(server, port, user, password, encrypt_method):
 def do(server, server_port, password):
     checkSatrtKill()
 
-    # server = "123.142.238.156"
-    # server_port = 1411
-    # password = "aP3XkPvT43FCpw=="
+    # server = "123.123.123.123"
+    # server_port = 8888
+    # password = "abcdefg"
     encrypt_method = "aes-256-cfb"
     if(performCommand(server, server_port, "", password, encrypt_method)):
         treatSucceedProxy(server,server_port,password)
