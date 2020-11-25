@@ -1,6 +1,3 @@
-# -*- encoding:utf-8 -*-
-
-
 import subprocess
 import json
 import requests
@@ -13,9 +10,7 @@ PROXY_INFO = "real.txt"
 FLAG_SUCCEED = "FILE"
 
 
-
-def performCommand(server, port, user, password, encrypt_method):
-
+def perform_command(server, port, user, password, encrypt_method):
     # 修改配置文件
 
     server_config = {
@@ -31,11 +26,11 @@ def performCommand(server, port, user, password, encrypt_method):
         "workers": 1
     }
 
-    modifyConfig(server_config)
+    modify_config(server_config)
 
     # 启动客户端代理
 
-    p = subprocess.Popen('/usr/local/bin/sslocal -c {} -d start'.format(SS_CONFIG_PATH), shell=True, 
+    p = subprocess.Popen('/usr/local/bin/sslocal -c {} -d start'.format(SS_CONFIG_PATH), shell=True,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     for line in p.stdout.readlines():
@@ -45,7 +40,7 @@ def performCommand(server, port, user, password, encrypt_method):
     print("retval:{}".format(retval))
 
     # 测试代理可用
-    if(checkAvailable()):
+    if check_available():
         p_kill = subprocess.Popen("ps aux | grep sslocal | head -n 1 | awk '{print $2}' | xargs kill", shell=True,
                                   stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         for line in p_kill.stdout.readlines():
@@ -60,20 +55,20 @@ def performCommand(server, port, user, password, encrypt_method):
 
 
 def do(server, server_port, password):
-    checkSatrtKill()
+    check_start_kill()
 
     # server = "123.123.123.123"
     # server_port = 8888
     # password = "aaaaaaaaaa"
     encrypt_method = "aes-256-cfb"
-    if(performCommand(server, server_port, "", password, encrypt_method)):
-        treatSucceedProxy(server,server_port,password)
+    if perform_command(server, server_port, "", password, encrypt_method):
+        treat_succeed_proxy(server, server_port, password)
         print("代理可用")
     else:
         print("代理不可用")
 
 
-def modifyConfig(dicts):
+def modify_config(dicts):
     try:
         js = json.dumps(dicts, indent=4, separators=(',', ':'))
         with open(SS_CONFIG_PATH, 'w') as fw:
@@ -83,24 +78,23 @@ def modifyConfig(dicts):
         raise
 
 
-
-def checkAvailable():
+def check_available():
     proxies = {
         'http': 'socks5h://127.0.0.1:1080',
         'https': 'socks5h://127.0.0.1:1080'
     }
     try:
-        res = requests.get("https://www.google.com",proxies=proxies,timeout=300)
+        res = requests.get("https://www.google.com", proxies=proxies, timeout=300)
         print("res.status_code:{}".format(res.status_code))
         stcode = res.status_code
-        if(stcode == 200):
+        if stcode == 200:
             return True
     except Exception as e:
         print(e.values)
         return False
 
 
-def checkSatrtKill():
+def check_start_kill():
     # sslocal -c /etc/shadowsocks/config.json -d stop
     p_kill = subprocess.Popen("ps aux | grep sslocal | head -n 1 | awk '{print $2}' | xargs kill", shell=True,
                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -110,9 +104,7 @@ def checkSatrtKill():
     # print("retval:{}".format(retval))
 
 
-
-def getProxyByLocal(p_path):
-
+def get_proxy_by_local(p_path):
     # 从本地文件中获取需要测试的代理信息
 
     with open(p_path) as fr:
@@ -120,7 +112,7 @@ def getProxyByLocal(p_path):
         # print("all_work:{}".format(all_proxy))
         for proxyInfos in fr.readlines():
             proxy_info = proxyInfos.split("-")
-            if(len(proxy_info)==3):
+            if len(proxy_info) == 3:
                 proxy_host = proxy_info[0]
                 proxy_port = proxy_info[1]
                 proxy_password = proxy_info[2].strip('\n').strip('\t')
@@ -130,17 +122,17 @@ def getProxyByLocal(p_path):
     print("[+] done local")
 
 
-def treatSucceedProxy(host, port, password):
-    if (FLAG_SUCCEED == "FILE"):
+def treat_succeed_proxy(host, port, password):
+    if FLAG_SUCCEED == "FILE":
         path = SAVE_SUCCEED_PATH
         payload = host + "-" + port + "-" + password
-        with open(path,'a+') as fw:
+        with open(path, 'a+') as fw:
             fw.write(payload)
             fw.write("\n")
             fw.flush()
             fw.close()
 
-    elif (FLAG_SUCCEED == "UPLOAD"):
+    elif FLAG_SUCCEED == "UPLOAD":
         pass
     else:
         pass
@@ -166,15 +158,11 @@ def use_proxy(func):
 def test_proxy():
     import requests
     print(requests.get('http://ifconfig.me/ip').text)
-    print 'eacheng'
+    print('eacheng')
 
 
 if __name__ == "__main__":
     # checkSatrtKill()
     # do()
     path = PROXY_INFO
-    getProxyByLocal(path)
-
-
-
-
+    get_proxy_by_local(path)
